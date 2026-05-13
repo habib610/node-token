@@ -20,7 +20,22 @@ function Layout({ children }) {
 function App() {
     return (
         <BrowserRouter>
-            <Toaster position="top-right" richColors />
+            <Toaster
+                position="top-right"
+                toastOptions={{
+                    className:
+                        "rounded-2xl border-none shadow-2xl font-sans bg-white dark:bg-gray-900",
+                    style: {
+                        padding: "16px",
+                    },
+                    success: {
+                        className: "border-l-4 border-purple-600",
+                    },
+                    error: {
+                        className: "border-l-4 border-red-600",
+                    },
+                }}
+            />
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
