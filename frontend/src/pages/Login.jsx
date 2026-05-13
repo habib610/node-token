@@ -1,17 +1,47 @@
 import { ArrowRight, Lock, Mail, Zap } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { LOGIN_URI } from "../components/routes/route";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [pass, setPass] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        if (email && pass) navigate("/dashboard");
+        if (email && pass) {
+            try {
+                let body = {
+                    email,
+                    password: pass,
+                };
+                let res = await fetch(LOGIN_URI, {
+                    method: "POST",
+                    body: JSON.stringify(body),
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                let data = await res.json();
+                if (res.ok) {
+                    toast.success("Account created successfully!");
+                    navigate("/dashboard");
+                } else {
+                    toast.error(data.message || "Registration failed");
+                }
+                // navigate("/dashboard");
+            } catch (error) {
+                console.log(error);
+                toast.error(error.message || "Registration failed");
+            } finally {
+                setIsLoading(false);
+            }
+        }
     };
 
     return (
@@ -67,9 +97,12 @@ export default function Login() {
                             type="submit"
                             variant="primary"
                             className="w-full mt-2"
+                            disabled={isLoading}
                         >
-                            Sign In
-                            <ArrowRight className="w-5 h-5 ml-1" />
+                            {isLoading ? "Login..." : " Sign In"}
+                            {!isLoading && (
+                                <ArrowRight className="w-5 h-5 ml-1" />
+                            )}
                         </Button>
                     </form>
 

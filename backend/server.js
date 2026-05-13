@@ -10,7 +10,7 @@ import itemRoutes from "./routes/itemRoutes.js";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Middleware
 app.use(cors());
@@ -31,8 +31,8 @@ mongoose
 app.use("/api/auth", authRoutes);
 app.use("/api/items", itemRoutes);
 
-app.get("/", (req, res) => {
-    res.send("API is running...");
+app.get("/", async (req, res) => {
+    await res.send("API is running...");
 });
 
 app.listen(PORT, () => {

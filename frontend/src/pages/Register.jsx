@@ -1,6 +1,7 @@
 import { Activity, ArrowRight, Lock, Mail, User } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { REGISTER_URI } from "../components/routes/route";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
@@ -9,11 +10,13 @@ export default function Register() {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [pass, setPass] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleRegister = async (e) => {
         e.preventDefault();
         if (username && email && pass) {
+            setIsLoading(true);
             let body = {
                 username,
                 email,
@@ -28,9 +31,19 @@ export default function Register() {
                     },
                 });
                 let data = await res.json();
+                if (res.ok) {
+                    toast.success("Account created successfully!");
+                    navigate("/dashboard");
+                } else {
+                    toast.error(data.message || "Registration failed");
+                }
                 navigate("/dashboard");
-                console.log(data);
-            } catch (error) {}
+            } catch (error) {
+                console.log(error);
+                toast.error(error.message || "Registration failed");
+            } finally {
+                setIsLoading(false);
+            }
         }
     };
 
@@ -88,9 +101,12 @@ export default function Register() {
                             type="submit"
                             variant="gradient"
                             className="w-full mt-2"
+                            disabled={isLoading}
                         >
-                            Get Started
-                            <ArrowRight className="w-5 h-5 ml-1" />
+                            {isLoading ? "Creating Account..." : "Get Started"}
+                            {!isLoading && (
+                                <ArrowRight className="w-5 h-5 ml-1" />
+                            )}
                         </Button>
                     </form>
 

@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Navbar from "./components/navigation/Navbar";
+import Toast from "./components/ui/Toast";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
@@ -19,6 +20,7 @@ function Layout({ children }) {
 function App() {
     return (
         <BrowserRouter>
+            <Toast />
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
