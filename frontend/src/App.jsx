@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Toaster } from "sonner";
 import Navbar from "./components/navigation/Navbar";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
@@ -19,6 +20,7 @@ function Layout({ children }) {
 function App() {
     return (
         <BrowserRouter>
+            <Toaster position="top-right" richColors />
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
