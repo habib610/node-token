@@ -1,8 +1,20 @@
 import { Home, LogOut } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { logout } from "../../auth";
 import ThemeToggle from "../ui/ThemeToggle";
 
 const Navbar = () => {
+    const navigate = useNavigate();
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigate("/login");
+        } catch (error) {
+            console.error(error);
+            toast.error(error || "Something went wrong");
+        }
+    };
     return (
         <nav className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10 w-full transition-colors duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -35,13 +47,13 @@ const Navbar = () => {
                         </Link>
                         <div className="pl-4 border-l border-gray-200 dark:border-gray-700 flex items-center space-x-4">
                             <ThemeToggle />
-                            <Link
-                                to="/login"
-                                className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors font-medium text-sm"
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors font-medium text-sm hover:cursor-pointer"
                             >
                                 <LogOut className="w-4 h-4" />
                                 <span className="hidden sm:inline">Logout</span>
-                            </Link>
+                            </button>
                         </div>
                     </div>
                 </div>

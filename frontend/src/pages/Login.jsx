@@ -2,7 +2,7 @@ import { ArrowRight, Lock, Mail, Zap } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { LOGIN_URI } from "../components/routes/route";
+import { login } from "../auth";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 
@@ -20,24 +20,15 @@ export default function Login() {
                     email,
                     password: pass,
                 };
-                let res = await fetch(LOGIN_URI, {
-                    method: "POST",
-                    body: JSON.stringify(body),
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-                let data = await res.json();
-                if (res.ok) {
-                    toast.success("Account created successfully!");
+                let res = await login(body);
+
+                if (res) {
+                    toast.success("Logged in success!");
                     navigate("/dashboard");
-                } else {
-                    toast.error(data.message || "Registration failed");
                 }
-                // navigate("/dashboard");
             } catch (error) {
-                console.log(error);
-                toast.error(error.message || "Registration failed");
+                console.error(error);
+                toast.error(error.message || "Login failed");
             } finally {
                 setIsLoading(false);
             }

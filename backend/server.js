@@ -5,6 +5,7 @@ import express from "express";
 import mongoose from "mongoose";
 
 import cookieParser from "cookie-parser";
+import { authenticateAccessToken } from "./helpers/tokenHelpers.js";
 import authRoutes from "./routes/authRoutes.js";
 import itemRoutes from "./routes/itemRoutes.js";
 
@@ -36,7 +37,7 @@ mongoose
 
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/items", itemRoutes);
+app.use("/api/items", authenticateAccessToken, itemRoutes);
 
 app.get("/", async (req, res) => {
     await res.send("API is running...");
