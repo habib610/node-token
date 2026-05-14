@@ -66,7 +66,7 @@ router.post("/login", async (req, res) => {
         };
 
         const accessToken = generateAccessToken(payload);
-        const refreshToken = generateRefreshToken(payload);
+        const refreshToken = generateRefreshToken();
 
         RefreshToken.create({
             tokenHash: hashToken(refreshToken),
@@ -92,7 +92,7 @@ router.post("/login", async (req, res) => {
     }
 });
 
-router.post("/refresh", (req, res) => {
+router.post("/refresh", async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) return res.sendStatus(401);
 
@@ -113,14 +113,14 @@ router.post("/refresh", (req, res) => {
     stored.revoked = true;
     const newRefreshToken = generateRefreshToken();
     stored.replacedByToken = hashToken(newRefreshToken);
-    await stored.saved()
+    await stored.save()
 
 
     await RefreshToken.create({
         tokenHash: hashToken(newRefreshToken),
         user: stored.user,
         expiresAt: new Date(
-            Date.now() + process.env.REFRESH_EXPIRES_DAYS * 86400000
+            Date.now() + process.env.REFRESH_TOKEN_DAYS * 86400000
         )
     })
 
@@ -137,7 +137,7 @@ router.post("/refresh", (req, res) => {
 
 });
 
-router.post("/logout", (req, res) => {
+router.post("/logout", async (req, res) => {
     const token = req.cookies.refreshToken;
     if (token) {
         await RefreshToken.findOneAndUpdate(

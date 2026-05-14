@@ -11,7 +11,7 @@ export const generateRefreshToken = () => {
 };
 
 export const hashToken = (token) => {
-    crypto.createHash("sha256").update(token).digest("hex");
+    return crypto.createHash("sha256").update(token).digest("hex");
 };
 
 export const authenticateAccessToken = (req, res, next) => {
