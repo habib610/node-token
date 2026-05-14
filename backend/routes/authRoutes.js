@@ -59,12 +59,16 @@ router.post("/login", async (req, res) => {
             return res.status(400).json({ message: "Invalid Credentials" });
         }
 
-        const payload = { user: { id: user.id } };
+        const payload = {
+            user: {
+                id: user.id,
+            },
+        };
 
         const accessToken = generateAccessToken(payload);
         const refreshToken = generateRefreshToken(payload);
 
-        res.cookie("cookie_refresh_token", refreshToken, {
+        res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
             secure: false,
             sameSite: "strict",
@@ -79,6 +83,23 @@ router.post("/login", async (req, res) => {
         console.error(err.message);
         res.status(500).send("Server error");
     }
+});
+
+router.post("/refresh", (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) return res.sendStatus(401);
+
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+        if (err) res.sendStatus(403);
+        const payload = { user: { id: user.id } };
+        const newAccessToken = generateAccessToken(payload);
+        res.json({ accessToken: newAccessToken });
+    });
+});
+
+router.post("/logout", (req, res) => {
+    res.clearCookie("refreshToken");
+    res.sendStatus(204);
 });
 
 export default router;
