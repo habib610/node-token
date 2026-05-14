@@ -1,6 +1,10 @@
 import bcrypt from "bcryptjs";
 import express from "express";
 import jwt from "jsonwebtoken";
+import {
+    generateAccessToken,
+    generateRefreshToken,
+} from "../helpers/tokenHelpers.js";
 import User from "../models/User.js";
 
 const router = express.Router();
@@ -56,12 +60,19 @@ router.post("/login", async (req, res) => {
         }
 
         const payload = { user: { id: user.id } };
-        const token = jwt.sign(payload, process.env.JWT_SECRET || "secret", {
-            expiresIn: "1h",
+
+        const accessToken = generateAccessToken(payload);
+        const refreshToken = generateRefreshToken(payload);
+
+        res.cookie("cookie_refresh_token", refreshToken, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "strict",
+            maxAge: 100000,
         });
 
         res.json({
-            token,
+            accessToken,
             user: { id: user.id, username: user.username, email },
         });
     } catch (err) {
